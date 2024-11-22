@@ -94,21 +94,21 @@ func (l *BasicLogger) Log(level int, format string, v ...interface{}) {
 }
 
 func (l *BasicLogger) Fatal(format string, v ...interface{}) {
-	l.Log(LevelFatal, format, v...)
+	l.Log(LevelFatal, "FATAL:"+format, v...)
 }
 
 func (l *BasicLogger) Error(format string, v ...interface{}) {
-	l.Log(LevelError, format, v...)
+	l.Log(LevelError, "ERROR:"+format, v...)
 }
 
 func (l *BasicLogger) Warn(format string, v ...interface{}) {
-	l.Log(LevelWarn, format, v...)
+	l.Log(LevelWarn, "WARN :"+format, v...)
 }
 
 func (l *BasicLogger) Info(format string, v ...interface{}) {
-	l.Log(LevelInfo, format, v...)
+	l.Log(LevelInfo, "INFO :"+format, v...)
 }
 
 func (l *BasicLogger) Debug(format string, v ...interface{}) {
-	l.Log(LevelDebug, format, v...)
+	l.Log(LevelDebug, "DEBUG:"+format, v...)
 }
