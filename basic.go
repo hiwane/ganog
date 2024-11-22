@@ -15,6 +15,7 @@ type BasicLogger struct {
 	logger *log.Logger
 	level  int
 	format string
+	color  bool
 }
 
 func NewLogger(logger *log.Logger, level int) *BasicLogger {
@@ -38,22 +39,57 @@ func (l *BasicLogger) Format() string {
 	return l.format
 }
 
+func (l *BasicLogger) SetColor(color bool) {
+	l.color = color
+}
+
+func (l *BasicLogger) get_color(level int) int {
+	if !l.color {
+		return -1
+	}
+	switch level {
+	case LevelFatal:
+		return 31
+	case LevelError:
+		return 31
+	case LevelWarn:
+		return 33
+	case LevelInfo:
+		return 36
+	default:
+		return -1
+	}
+}
+
 func (l *BasicLogger) Log(level int, format string, v ...interface{}) {
 	if l.level >= level {
+
+		c := l.get_color(level)
+
 		_, file, line, ok := runtime.Caller(2)
+
+		anys := make([]any, 0, len(v)+5)
 		if ok {
 			// フルパスは長いので、ファイル名のみにする
 			// 最後のスラッシュを探す
 			if pos := strings.LastIndex(file, "/"); pos != -1 {
 				file = file[pos+1:]
 			}
-			anys := make([]interface{}, 0, len(v)+2)
 			anys = append(anys, file, line)
-			anys = append(anys, v...)
-			l.logger.Printf(l.format+format, anys...)
+			if c > 0 {
+				anys = append(anys, c)
+				format = l.format + "\x1b[%dm" + format + "\x1b[0m"
+			} else {
+				format = l.format + format
+			}
 		} else {
-			l.logger.Printf(format, v...)
+			if c > 0 {
+				anys = append(anys, c)
+				format = "\x1b[%dm" + format + "\x1b[0m"
+			}
 		}
+		anys = append(anys, v...)
+		l.logger.Printf(format, anys...)
 	}
 }
 
