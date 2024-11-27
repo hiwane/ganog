@@ -1,5 +1,9 @@
 package ganog
 
+import (
+	"fmt"
+)
+
 const (
 	LevelNone  = 0
 	LevelFatal = 1
@@ -8,6 +12,10 @@ const (
 	LevelInfo  = 4
 	LevelDebug = 5
 )
+
+func HelpMessage() string {
+	return fmt.Sprintf("log level: %d(fatal), %d(error), %d(warn), %d(info), %d(debug), %d(none)", LevelFatal, LevelError, LevelWarn, LevelInfo, LevelDebug, LevelNone)
+}
 
 type Logger interface {
 	SetLevel(level int)
