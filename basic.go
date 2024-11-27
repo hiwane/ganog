@@ -1,6 +1,7 @@
 package ganog
 
 import (
+	"fmt"
 	"log"
 	"runtime"
 	"strings"
@@ -30,7 +31,7 @@ func (l *BasicLogger) Level() int {
 	return l.level
 }
 
-/** %s, %d が必須 **/
+/** ファイル名と行番号の表示. %s, %d が必須 **/
 func (l *BasicLogger) SetFormat(format string) {
 	l.format = format
 }
@@ -61,6 +62,14 @@ func (l *BasicLogger) get_color(level int) int {
 	}
 }
 
+func (l *BasicLogger) esp(m int) string {
+	if l.color {
+		return fmt.Sprintf("\x1b[%d]", m)
+	} else {
+		return ""
+	}
+}
+
 func (l *BasicLogger) Log(level int, format string, v ...interface{}) {
 	if l.level >= level {
 
@@ -76,17 +85,9 @@ func (l *BasicLogger) Log(level int, format string, v ...interface{}) {
 				file = file[pos+1:]
 			}
 			anys = append(anys, file, line)
-			if c > 0 {
-				anys = append(anys, c)
-				format = l.format + "\x1b[%dm" + format + "\x1b[0m"
-			} else {
-				format = l.format + format
-			}
+			format = l.format + l.esp(c) + format + l.esp(0)
 		} else {
-			if c > 0 {
-				anys = append(anys, c)
-				format = "\x1b[%dm" + format + "\x1b[0m"
-			}
+			format = l.esp(c) + format + l.esp(0)
 		}
 		anys = append(anys, v...)
 		l.logger.Printf(format, anys...)
